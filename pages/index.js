@@ -1,65 +1,93 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import { useState } from "react";
 
 export default function Home() {
+  const [taskInput, setTask] = useState("");
+  const [todos, setTodos] = useState([]);
+  const [alert, setAlert] = useState(false);
+
+  const handleTask = (e) => {
+    e.preventDefault();
+
+    const allTodos = [
+      {
+        task: taskInput,
+      },
+      ...todos,
+    ];
+    setTodos(allTodos);
+    setTask("");
+    if (todos.length == 4) {
+      setAlert(true);
+    }
+  };
+  const handleHide = () => {
+    console.log("clicked");
+    setAlert(!alert);
+  };
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+    <div className="w-full h-screen relative flex flex-col md:flex-row">
+      {alert && (
+        <div className="absolute bottom-0 left-5 right-5 mx-2 p-4 bg-green-300 text-white rounded my-2 flex justify-between">
+          <p>Wow you have alot of tasks, Keep Going! </p>
+          <button
+            className="text-gray-600 rounded-md cursor-pointer z-10"
+            onClick={() => setAlert(!alert)}
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            X
+          </button>
         </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      )}
+      <div className="leftSide bg-gray-400 h-1/5 md:h-screen w-full md:w-1/2">
+        <form
+          className="flex flex-col justify-items-center align-middle text-center space-y-3"
+          onSubmit={handleTask}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+          <label htmlFor="task" className=" text-2xl text-gray-100">
+            Create a Task
+          </label>
+          <div className="inputButton">
+            <input
+              type="text"
+              value={taskInput}
+              onChange={(e) => setTask(e.target.value)}
+              className="rounded-md shadow-lg w-52 py-1 px-2 focus:outline-none"
+            />
+            <button className="px-3 py-1 bg-green-300 rounded-md ml-1 text-white transform transition ease-in-out active:scale-95 focus:outline-none">
+              Add Task
+            </button>
+          </div>
+        </form>
+      </div>
+      <div className="rightSide relative">
+        {todos.length > 0 && (
+          <p className="absolute top-0 left-0 right-0 text-center p-4 text-gray-400 text-2xl">
+            You have <span className="text-green-300">{todos.length}</span> task
+            {todos.length == 1 ? "" : "s"}
+          </p>
+        )}
+        <div className="todoHolder ">
+          {todos.length == 0 ? (
+            <h3 className="text-gray-400 text-center text-3xl">No Tasks Yet</h3>
+          ) : (
+            todos.map((todo, index) => {
+              return (
+                <p
+                  key={index}
+                  className="w-full p-3 rounded-md shadow-md bg-gray-50 my-1"
+                >
+                  {todo.task}
+                </p>
+              );
+            })
+          )}
+          {todos.length > 11 && (
+            <p className="animate-bounce absolute bottom-10 left-0 right-0 text-center text-gray-400">
+              scroll down
+            </p>
+          )}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
